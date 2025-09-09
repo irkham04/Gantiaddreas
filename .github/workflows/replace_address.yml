@@ -1,0 +1,36 @@
+name: Replace Proxy Address
+
+on:
+  push:
+    paths:
+      - active_all.txt
+      - new_addresses.txt
+  workflow_dispatch:
+
+jobs:
+  replace-address:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: pip install requests
+
+    - name: Run replacement script
+      run: python replace_address.py
+
+    - name: Commit updated file
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add active_all_updated.txt
+        git commit -m "Update addresses from new_addresses.txt"
+        git push
+      continue-on-error: true
